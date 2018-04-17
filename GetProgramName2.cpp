@@ -26,8 +26,13 @@ AVSValue __cdecl GetProgramName2(AVSValue args, void *user_data, IScriptEnvironm
     path_pos = path_mbs;
     if(full_path)
     {
-        path_pos = strrchr(path_mbs, '\\') + 1;
+        path_pos = strrchr(path_mbs, '\\');
+        if(path_pos == NULL)
+            path_pos = path_mbs;
     }
+
+    if(path_pos[0] == '\\') /* workaround for msys2 */
+        path_pos++;
 
     return AVSValue(env->SaveString(path_pos));
 }
