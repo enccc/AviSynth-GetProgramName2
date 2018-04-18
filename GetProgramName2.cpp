@@ -3,38 +3,28 @@
 
 AVSValue __cdecl GetProgramName2(AVSValue args, void *user_data, IScriptEnvironment *env)
 {
-    bool    full_path = args[0].AsBool(false) ? false : true;
+    bool  full_path = args[0].AsBool(false) ? false : true;
 
-    char    path_mbs[MAX_PATH*2];  /* [MAX_PATH*2]: for 2-byte character */
-    char   *path_pos;
-    int     return_code;
-    int     mbs_len = MAX_PATH*2;
+    char  path_str[MAX_PATH*2]; /* [MAX_PATH*2]: for 2-byte character */
+    char *path_ptr;
+    int   ret_code;
 
-    int     cmd_argc;
-    LPWSTR* cmd_argv = CommandLineToArgvW(GetCommandLineW(), &cmd_argc );
+    ret_code = GetModuleFileName(NULL, path_str, sizeof(path_str));
+    if(ret_code == 0)
+        env->ThrowError("GetProgramName2: Failed to GetModuleFileName");
 
-    if(cmd_argv == NULL)
-        env->ThrowError("GetProgramName2: Failed to get the command line arguments");
-
-    if(cmd_argv[0] != NULL)
-    {
-        return_code = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, cmd_argv[0], -1, path_mbs, mbs_len, NULL, NULL);
-        if(return_code == 0)
-            env->ThrowError("GetProgramName2: Failed to WideCharToMultiByte");
-    }
-
-    path_pos = path_mbs;
+    path_ptr = path_str;
     if(full_path)
     {
-        path_pos = strrchr(path_mbs, '\\');
-        if(path_pos == NULL)
-            path_pos = path_mbs;
+        path_ptr = strrchr(path_str, '\\');
+        if(path_ptr == NULL)
+            path_ptr = path_str;
     }
 
-    if(path_pos[0] == '\\')
-        path_pos++;
+    if(path_ptr[0] == '\\')
+        path_ptr++;
 
-    return AVSValue(env->SaveString(path_pos));
+    return AVSValue(env->SaveString(path_ptr));
 }
 
 const AVS_Linkage* AVS_linkage = 0;
