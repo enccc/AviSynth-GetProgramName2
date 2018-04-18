@@ -35,5 +35,5 @@ extern "C" __declspec(dllexport) const char* __stdcall AvisynthPluginInit3(IScri
 
     env->AddFunction("GetProgramName2", "[full_path]b", GetProgramName2, 0);
 
-    return "GetProgramName2 v0.1.0";
+    return "GetProgramName2 v0.2.0";
 }
