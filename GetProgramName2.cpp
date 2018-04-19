@@ -3,7 +3,7 @@
 
 AVSValue __cdecl GetProgramName2(AVSValue args, void *user_data, IScriptEnvironment *env)
 {
-    bool  full_path = args[0].AsBool(false) ? false : true;
+    bool  full_path = args[0].AsBool(false);
 
     char  path_str[MAX_PATH*2]; /* [MAX_PATH*2]: for 2-byte character */
     char *path_ptr;
@@ -14,15 +14,14 @@ AVSValue __cdecl GetProgramName2(AVSValue args, void *user_data, IScriptEnvironm
         env->ThrowError("GetProgramName2: Failed to GetModuleFileName");
 
     path_ptr = path_str;
-    if(full_path)
+    if(full_path == false)
     {
         path_ptr = strrchr(path_str, '\\');
+        if(path_ptr[0] == '\\')
+            path_ptr++;
         if(path_ptr == NULL)
             path_ptr = path_str;
     }
-
-    if(path_ptr[0] == '\\')
-        path_ptr++;
 
     return AVSValue(env->SaveString(path_ptr));
 }
