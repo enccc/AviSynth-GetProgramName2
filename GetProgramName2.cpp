@@ -3,27 +3,32 @@
 
 AVSValue __cdecl GetProgramName2(AVSValue args, void *user_data, IScriptEnvironment *env)
 {
-    bool  full_path = args[0].AsBool(false);
+    bool     full_path = args[0].AsBool(false);
 
-    char  path_str[MAX_PATH*2]; /* [MAX_PATH*2]: for 2-byte character */
-    char *path_ptr;
-    int   ret_code;
+    wchar_t  path_wcs[MAX_PATH*2];  /* [MAX_PATH*2]: for surrogate pair characters */
+    wchar_t *path_ptr;
+    char     path_str[MAX_PATH*2];
+    int      ret_code;
 
-    ret_code = GetModuleFileName(NULL, path_str, sizeof(path_str));
+    ret_code = GetModuleFileNameW(NULL, path_wcs, MAX_PATH*2);
     if(ret_code == 0)
-        env->ThrowError("GetProgramName2: Failed to GetModuleFileName");
+        env->ThrowError("GetProgramName2: Failed to get a program full path");
 
-    path_ptr = path_str;
+    path_ptr = path_wcs;
     if(full_path == false)
     {
-        path_ptr = strrchr(path_str, '\\');
-        if(path_ptr[0] == '\\')
+        path_ptr = wcsrchr(path_wcs, L'\\');
+        if(path_ptr[0] == L'\\')
             path_ptr++;
         if(path_ptr == NULL)
-            path_ptr = path_str;
+            path_ptr = path_wcs;
     }
 
-    return AVSValue(env->SaveString(path_ptr));
+    ret_code = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, path_ptr, -1, path_str, MAX_PATH*2, NULL, NULL);
+    if(ret_code == 0)
+        env->ThrowError("GetProgramName2: Failed to convert to multi byte chars from wide byte chars");
+
+    return AVSValue(env->SaveString(path_str));
 }
 
 const AVS_Linkage* AVS_linkage = 0;
