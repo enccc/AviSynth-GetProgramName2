@@ -28,9 +28,9 @@
     returns a path excluding a program name from a full path.
 
 ## LICENSE
-MIT LICENSE
+    MIT LICENSE
 
 ## NOTE
-GetProgramName2 is similar to GetProgramName by JM Roelofs,  
-but this plugin is a newly written.  
-so... this plugin might be really buggy.  
+    GetProgramName2 is similar to GetProgramName by JM Roelofs,  
+    but this plugin is a newly written.  
+    so... this plugin might be really buggy.  
